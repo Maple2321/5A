@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Фотогалерея 5А класса</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', Arial, sans-serif;
+            background: linear-gradient(135deg, #f0f8ff 0%, #e3f2fd 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            text-decoration: none;
+            color: #2196F3;
+            font-weight: bold;
+            padding: 10px 20px;
+            background-color: white;
+            border-radius: 25px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            background-color: #2196F3;
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .gallery-title {
+            font-size: 36px;
+            color: #2196F3;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 10px;
+        }
+
+        .gallery-description {
+            font-size: 18px;
+            color: #4CAF50;
+            margin-bottom: 30px;
+        }
+
+        /* Стили для галереи */
+        .gallery-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .gallery-item {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.2);
+        }
+
+        .gallery-img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-bottom: 3px solid #4CAF50;
+        }
+
+        .gallery-info {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .gallery-info h3 {
+            color: #2196F3;
+            margin-bottom: 10px;
+            font-size: 20px;
+        }
+
+        .gallery-info p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .gallery-date {
+            color: #FF9800;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        /* Категории галереи */
+        .gallery-categories {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .category-btn {
+            padding: 10px 20px;
+            background-color: white;
+            border: 2px solid #4CAF50;
+            border-radius: 25px;
+            color: #2196F3;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .category-btn:hover,
+        .category-btn.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        /* Пагинация */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .page-btn {
+            padding: 10px 15px;
+            background-color: white;
+            border: 2px solid #2196F3;
+            border-radius: 10px;
+            color: #2196F3;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .page-btn:hover,
+        .page-btn.active {
+            background-color: #2196F3;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .gallery-container {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+            
+            .gallery-title {
+                font-size: 28px;
+            }
+            
+            .gallery-categories {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .gallery-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .gallery-title {
+                font-size: 24px;
+            }
+        }
+
+        .photo-count {
+            background-color: #4CAF50;
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .photo-count h2 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 40px;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            font-size: 18px;
+            color: #666;
+        }
+
+        /* Стили для модального окна полноэкранного просмотра */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+        }
+
+        .modal-img {
+            width: 100%;
+            height: auto;
+            max-height: 80vh;
+            object-fit: contain;
+            border-radius: 10px;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-size: 40px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            z-index: 1001;
+        }
+
+        .modal-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            font-size: 30px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .modal-nav:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .modal-prev {
+            left: 20px;
+        }
+
+        .modal-next {
+            right: 20px;
+        }
+
+        .modal-caption {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            color: white;
+            font-size: 18px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Вернуться на главную</a>
+        
+        <div class="header">
+            <h1 class="gallery-title">Фотогалерея 5А класса</h1>
+            <p class="gallery-description">Запечатлеваем самые яркие моменты нашей школьной жизни!</p>
+        </div>
+
+        <div class="photo-count">
+            <h2>📸 Наша коллекция фотографий</h2>
+            <p>Здесь собраны все наши лучшие моменты: уроки, праздники, экскурсии и просто весёлые дни в школе!</p>
+        </div>
+
+        <div class="gallery-categories">
+            <button class="category-btn active" onclick="filterGallery('all')">Все фотографии</button>
+            <button class="category-btn" onclick="filterGallery('class')">👥 Наш класс</button>
+            <button class="category-btn" onclick="filterGallery('events')">🎉 Мероприятия</button>
+            <button class="category-btn" onclick="filterGallery('trips')">🚌 Экскурсии</button>
+        </div>
+
+        <div class="gallery-container" id="galleryContainer">
+            <!-- Наш класс -->
+            <div class="gallery-item" data-category="class">
+                <img src="наш класс.jpg" alt="Наш класс" class="gallery-img">
+                <div class="gallery-info">
+                    <h3>Наш дружный класс</h3>
+                    <p>Веселая фотография нашего 5А класса</p>
+                    <div class="gallery-date">Сентябрь 2025</div>
+                </div>
+            </div>
+            <div class="gallery-item" data-category="class">
+                <img src="наш класс1.jpg" alt="Наш класс" class="gallery-img">
+                <div class="gallery-info">
+                    <h3>На занятиях</h3>
+                    <p>Активно работаем на уроках</p>
+                    <div class="gallery-date">Октябрь 2025</div>
+                </div>
+            </div>
+            <div class="gallery-item" data-category="class">
+                <img src="наш класс2.jpg" alt="Наш класс" class="gallery-img">
+                <div class="gallery-info">
+                    <h3>Классная работа</h3>
+                    <p>Совместное выполнение заданий</p>
+                    <div class="gallery-date">Ноябрь 2025</div>
+                </div>
+            </div>
+            <div class="gallery-item" data-category="class">
+                <img src="наш класс3.jpg" alt="Наш класс" class="gallery-img">
+                <div class="gallery-info">
+                    <h3>Перемена</h3>
+                    <p>Отдыхаем между уроками</p>
+                    <div class="gallery-date">Декабрь 2025</div>
+                </div>
+            </div>
+            <div class="gallery-item" data-category="class">
+                <img src="наш класс4.jpg" alt="Наш класс" class="gallery-img">
+                <div class="gallery-info">
+                    <h3>Наш классный уголок</h3>
+                    <p>Лучший уголок в школе</p>
+                    <div class="gallery-date">Январь 2026</div>
+                </div>
+            </div>
+            <div class="gallery-item" data-category="class">
+                <img src="класс.png" alt="Наш класс" class="gallery-img">
+                <div class="gallery-info">
+                    <h3>Эмблема класса</h3>
+                    <p>Наша фирменная эмблема</p>
+                    <div class="gallery-date">2025-2026</div>
+                </div>
+            </div>
+
+            <!-- Мероприятия -->
+            <div class="gallery-item" data-category="events">
+                <img src="мероприятия.jpg" alt="Мероприятие" class="gallery-img">
+                <div class="gallery-info">
+                    <h3>День народного единства</h3>
+                    <p>Праздничное мероприятие</p>
+                    <div class="gallery-date">4 ноября 2025</div>
+                </div>
+            </div>
+            <div class="gallery-item" data-category="events">
+                <img src="мероприятия1.jpg" alt="Награждение" class="gallery-img">
+                <div class="gallery-info">
+                    <h3>Торжественная церемония</h3>
+                    <p>Награждение наших учеников</p>
+                    <div class="gallery-date">10 декабря 2025</div>
+                </div>
+            </div>
+            <div class="gallery-item" data-category="events">
+                <img src="мероприятия2.jpg" alt="День народного единства" class="gallery-img">
+                <div class="gallery-info">
+                    <h3>Праздничный концерт</h3>
+                    <p>Выступление на школьном концерте</p>
+                    <div class="gallery-date">4 ноября 2025</div>
+                </div>
+            </div>
+            <div class="gallery-item" data-category="events">
+                <img src="мероприятия3.jpg" alt="Мероприятие" class="gallery-img">
+                <div class="gallery-info">
+                    <h3>Школьный конкурс</h3>
+                    <p>Участие в творческом конкурсе</p>
+                    <div class="gallery-date">Декабрь 2025</div>
+                </div>
+            </div>
+            <div class="gallery-item" data-category="events">
+                <img src="мероприятия4.jpg" alt="Грамота" class="gallery-img">
+                <div class="gallery-info">
+                    <h3>1 место в конкурсе</h3>
+                    <p>Награда "Успешный класс"</p>
+                    <div class="gallery-date">2025 год</div>
+                </div>
+            </div>
+            <div class="gallery-item" data-category="events">
+                <img src="мероприятия5.jpg" alt="Грамота" class="gallery-img">
+                <div class="gallery-info">
+                    <h3>Эстафета "Всё серьёзно"</h3>
+                    <p>1 место в предметной неделе</p>
+                    <div class="gallery-date">29 января 2026</div>
+                </div>
+            </div>
+            <div class="gallery-item" data-category="events">
+                <img src="мероприятия6.jpg" alt="Грамота" class="gallery-img">
+                <div class="gallery-info">
+                    <h3>Этнофестиваль сказок</h3>
+                    <p>1 место в фестивале</p>
+                    <div class="gallery-date">2025 год</div>
+                </div>
+            </div>
+            <div class="gallery-item" data-category="events">
+                <img src="мероприятия7.jpg" alt="Грант" class="gallery-img">
+                <div class="gallery-info">
+                    <h3>Конкурс кабинетов</h3>
+                    <p>Грант за лучшее оформление</p>
+                    <div class="gallery-date">Новый 2026 год</div>
+                </div>
+            </div>
+            <div class="gallery-item" data-category="events">
+                <img src="мероприятия8.jpg" alt="Диплом" class="gallery-img">
+                <div class="gallery-info">
+                    <h3>Игровая программа</h3>
+                    <p>Диплом 1 степени</p>
+                    <div class="gallery-date">2025 год</div>
+                </div>
+            </div>
+            <div class="gallery-item" data-category="events">
+                <img src="мероприятия9.jpg" alt="Грамота" class="gallery-img">
+                <div class="gallery-info">
+                    <h3>День конфет</h3>
+                    <p>Награда за участие</p>
+                    <div class="gallery-date">2025 год</div>
+                </div>
+            </div>
+            <div class="gallery-item" data-category="events">
+                <img src="мероприятия10.jpg" alt="Грамота" class="gallery-img">
+                <div class="gallery-info">
+                    <h3>Концерт "Эпохальный"</h3>
+                    <p>Номинация "Кар-Мем"</p>
+                    <div class="gallery-date">29 января 2026</div>
+                </div>
+            </div>
+            <div class="gallery-item" data-category="events">
+                <img src="мероприятия11.jpg" alt="Грамота" class="gallery-img">
+                <div class="gallery-info">
+                    <h3>Акция "Бумажный Бум"</h3>
+                    <p>2 место в экологической акции</p>
+                    <div class="gallery-date">Октябрь 2025</div>
+                </div>
+            </div>
+            <div class="gallery-item" data-category="events">
+                <img src="мероприятия12.jpg" alt="Грамота" class="gallery-img">
+                <div class="gallery-info">
+                    <h3>Творческий конкурс</h3>
+                    <p>Награда за креативность</p>
+                    <div class="gallery-date">Январь 2026</div>
+                </div>
+            </div>
+            <div class="gallery-item" data-category="events">
+                <img src="мероприятия13.jpg" alt="Грамота" class="gallery-img">
+                <div class="gallery-info">
+                    <h3>Школьный праздник</h3>
+                    <p>Участие в мероприятии</p>
+                    <div class="gallery-date">2025 год</div>
+                </div>
+            </div>
+            <div class="gallery-item" data-category="events">
+                <img src="мероприятия14.jpg" alt="Мероприятие" class="gallery-img">
+                <div class="gallery-info">
+                    <h3>Спортивное событие</h3>
+                    <p>Участие в соревнованиях</p>
+                    <div class="gallery-date">2025 год</div>
+                </div>
+            </div>
+
+            <!-- Экскурсии -->
+            <div class="gallery-item" data-category="trips">
+                <img src="эскурсия.jpg" alt="Экскурсия" class="gallery-img">
+                <div class="gallery-info">
+                    <h3>Музей науки</h3>
+                    <p>Познавательная экскурсия</p>
+                    <div class="gallery-date">Сентябрь 2025</div>
+                </div>
+            </div>
+            <div class="gallery-item" data-category="trips">
+                <img src="эскурсия1.jpg" alt="Экскурсия" class="gallery-img">
+                <div class="gallery-info">
+                    <h3>Исторический музей</h3>
+                    <p>Знакомство с историей</p>
+                    <div class="gallery-date">Октябрь 2025</div>
+                </div>
+            </div>
+            <div class="gallery-item" data-category="trips">
+                <img src="эскурсия2.jpg" alt="Экскурсия" class="gallery-img">
+                <div class="gallery-info">
+                    <h3>Природный заповедник</h3>
+                    <p>Изучение природы</p>
+                    <div class="gallery-date">Ноябрь 2025</div>
+                </div>
+            </div>
+            <div class="gallery-item" data-category="trips">
+                <img src="эскурсия3.jpg" alt="Экскурсия" class="gallery-img">
+                <div class="gallery-info">
+                    <h3>Технический музей</h3>
+                    <p>Экскурсия по технике</p>
+                    <div class="gallery-date">Декабрь 2025</div>
+                </div>
+            </div>
+            <div class="gallery-item" data-category="trips">
+                <img src="эскурсия4.jpg" alt="Экскурсия" class="gallery-img">
+                <div class="gallery-info">
+                    <h3>Литературная экскурсия</h3>
+                    <p>Знакомство с писателями</p>
+                    <div class="gallery-date">Январь 2026</div>
+                </div>
+            </div>
+            <div class="gallery-item" data-category="trips">
+                <img src="эскурсия5.jpg" alt="Экскурсия" class="gallery-img">
+                <div class="gallery-info">
+                    <h3>Художественная галерея</h3>
+                    <p>Экскурсия по искусству</p>
+                    <div class="gallery-date">Февраль 2026</div>
+                </div>
+            </div>
+            <div class="gallery-item" data-category="trips">
+                <img src="эскурсия6.jpg" alt="Экскурсия" class="gallery-img">
+                <div class="gallery-info">
+                    <h3>Научный центр</h3>
+                    <p>Практические опыты</p>
+                    <div class="gallery-date">Март 2026</div>
+                </div>
+            </div>
+            <div class="gallery-item" data-category="trips">
+                <img src="эскурсия7.jpg" alt="Экскурсия" class="gallery-img">
+                <div class="gallery-info">
+                    <h3>Физическая лаборатория</h3>
+                    <p>Изучение законов физики</p>
+                    <div class="gallery-date">Апрель 2026</div>
+                </div>
+            </div>
+            <div class="gallery-item" data-category="trips">
+                <img src="эскурсия8.jpg" alt="Экскурсия" class="gallery-img">
+                <div class="gallery-info">
+                    <h3>Ботанический сад</h3>
+                    <p>Знакомство с растениями</p>
+                    <div class="gallery-date">Май 2026</div>
+                </div>
+            </div>
+            <div class="gallery-item" data-category="trips">
+                <img src="эскурсия9.jpg" alt="Экскурсия" class="gallery-img">
+                <div class="gallery-info">
+                    <h3>Зоологический музей</h3>
+                    <p>Изучение животного мира</p>
+                    <div class="gallery-date">Июнь 2026</div>
+                </div>
+            </div>
+            <div class="gallery-item" data-category="trips">
+                <img src="эскурсия10.jpg" alt="Экскурсия" class="gallery-img">
+                <div class="gallery-info">
+                    <h3>Архитектурная экскурсия</h3>
+                    <p>Знакомство с историей города</p>
+                    <div class="gallery-date">Июль 2026</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="empty-message" id="emptyMessage" style="display: none;">
+            <h3>📸 Фотографии загружаются...</h3>
+            <p>Скоро здесь появятся новые фотографии из нашей школьной жизни!</p>
+            <p>А пока вы можете посмотреть те, что уже есть в других категориях.</p>
+        </div>
+
+        <div class="pagination">
+            <button class="page-btn active">1</button>
+            <button class="page-btn">2</button>
+            <button class="page-btn">3</button>
+        </div>
+    </div>
+
+    <!-- Модальное окно для полноэкранного просмотра -->
+    <div class="modal-overlay" id="modalOverlay">
+        <button class="modal-close" id="modalClose">&times;</button>
+        <button class="modal-nav modal-prev" id="modalPrev">‹</button>
+        <div class="modal-content">
+            <img src="" alt="" class="modal-img" id="modalImg">
+            <div class="modal-caption" id="modalCaption"></div>
+        </div>
+        <button class="modal-nav modal-next" id="modalNext">›</button>
+    </div>
+
+    <script>
+        // Функция для фильтрации галереи
+        function filterGallery(category) {
+            const galleryItems = document.querySelectorAll('.gallery-item');
+            const emptyMessage = document.getElementById('emptyMessage');
+            const categoryBtns = document.querySelectorAll('.category-btn');
+            
+            // Убираем активный класс со всех кнопок
+            categoryBtns.forEach(btn => btn.classList.remove('active'));
+            
+            // Добавляем активный класс нажатой кнопке
+            event.target.classList.add('active');
+            
+            let visibleItems = 0;
+            
+            // Показываем/скрываем элементы галереи
+            galleryItems.forEach(item => {
+                if (category === 'all' || item.dataset.category === category) {
+                    item.style.display = 'block';
+                    visibleItems++;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            
+            // Показываем сообщение, если нет фотографий в категории
+            if (visibleItems === 0) {
+                emptyMessage.style.display = 'block';
+            } else {
+                emptyMessage.style.display = 'none';
+            }
+        }
+
+        // Функция для пагинации
+        function changePage(pageNum) {
+            const pageBtns = document.querySelectorAll('.page-btn');
+            pageBtns.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Здесь можно добавить загрузку фотографий для выбранной страницы
+            alert('Страница ' + pageNum + ' будет загружена, когда добавим больше фотографий!');
+        }
+
+        // Функции для полноэкранного просмотра
+        let currentImageIndex = 0;
+        let galleryImages = [];
+
+        function openModal(index) {
+            const modal = document.getElementById('modalOverlay');
+            const modalImg = document.getElementById('modalImg');
+            const modalCaption = document.getElementById('modalCaption');
+            const galleryItems = document.querySelectorAll('.gallery-item[style*="block"], .gallery-item:not([style])');
+            
+            galleryImages = Array.from(galleryItems);
+            currentImageIndex = index;
+            
+            const currentItem = galleryImages[currentImageIndex];
+            const imgSrc = currentItem.querySelector('.gallery-img').src;
+            const title = currentItem.querySelector('h3').textContent;
+            const description = currentItem.querySelector('p').textContent;
+            
+            modalImg.src = imgSrc;
+            modalCaption.textContent = title + ' - ' + description;
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('modalOverlay');
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        function navigateModal(direction) {
+            currentImageIndex += direction;
+            
+            if (currentImageIndex < 0) {
+                currentImageIndex = galleryImages.length - 1;
+            } else if (currentImageIndex >= galleryImages.length) {
+                currentImageIndex = 0;
+            }
+            
+            const currentItem = galleryImages[currentImageIndex];
+            const modalImg = document.getElementById('modalImg');
+            const modalCaption = document.getElementById('modalCaption');
+            
+            const imgSrc = currentItem.querySelector('.gallery-img').src;
+            const title = currentItem.querySelector('h3').textContent;
+            const description = currentItem.querySelector('p').textContent;
+            
+            modalImg.src = imgSrc;
+            modalCaption.textContent = title + ' - ' + description;
+        }
+
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', function() {
+            // Добавляем обработчики событий для кнопок пагинации
+            document.querySelectorAll('.page-btn').forEach((btn, index) => {
+                btn.addEventListener('click', function() {
+                    changePage(index + 1);
+                });
+            });
+
+            // Добавляем обработчики для кликов по фотографиям
+            document.querySelectorAll('.gallery-item').forEach((item, index) => {
+                item.addEventListener('click', function() {
+                    openModal(index);
+                });
+            });
+
+            // Обработчики для модального окна
+            document.getElementById('modalClose').addEventListener('click', closeModal);
+            document.getElementById('modalPrev').addEventListener('click', () => navigateModal(-1));
+            document.getElementById('modalNext').addEventListener('click', () => navigateModal(1));
+            document.getElementById('modalOverlay').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeModal();
+                }
+            });
+
+            // Закрытие по клавише ESC
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeModal();
+                } else if (e.key === 'ArrowLeft') {
+                    navigateModal(-1);
+                } else if (e.key === 'ArrowRight') {
+                    navigateModal(1);
+                }
+            });
+
+            // Активируем кнопку "Все фотографии" по умолчанию
+            filterGallery('all');
+        });
+    </script>
+</body>
+</html>

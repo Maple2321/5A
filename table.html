@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Расписание 5А класса</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', Arial, sans-serif;
+            background: linear-gradient(135deg, #f0f8ff 0%, #e3f2fd 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            text-decoration: none;
+            color: #2196F3;
+            font-weight: bold;
+            padding: 10px 20px;
+            background-color: white;
+            border-radius: 25px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            background-color: #2196F3;
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .class-title {
+            font-size: 36px;
+            color: #2196F3;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 10px;
+        }
+
+        .week-info {
+            font-size: 20px;
+            color: #4CAF50;
+            font-weight: bold;
+        }
+
+        .schedule-container {
+            background-color: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            overflow-x: auto;
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0 auto;
+        }
+
+        th {
+            background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+            color: white;
+            padding: 20px 15px;
+            text-align: center;
+            font-size: 18px;
+            border: none;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        th:first-child {
+            border-radius: 10px 0 0 0;
+        }
+
+        th:last-child {
+            border-radius: 0 10px 0 0;
+        }
+
+        td {
+            padding: 18px 15px;
+            text-align: center;
+            border: 1px solid #e0e0e0;
+            font-size: 16px;
+            transition: all 0.3s;
+            vertical-align: top;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        tr:hover {
+            background-color: #e3f2fd;
+        }
+
+        td:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            z-index: 1;
+            position: relative;
+        }
+
+        .lesson-number {
+            width: 70px;
+            font-weight: bold;
+            color: #2196F3;
+            background-color: #f0f7ff;
+        }
+
+        .time {
+            width: 120px;
+            font-weight: bold;
+            color: #4CAF50;
+            background-color: #f1f8e9;
+        }
+
+        .subject {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .teacher {
+            font-size: 14px;
+            color: #666;
+            font-style: italic;
+            margin-bottom: 3px;
+        }
+
+        .classroom {
+            font-size: 14px;
+            color: #FF9800;
+            font-weight: bold;
+        }
+
+        .break {
+            background-color: #fff3e0;
+            color: #FF9800;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .highlight {
+            background-color: #e8f5e8 !important;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 30px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .color-box {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        .math { background-color: #e3f2fd; }
+        .russian { background-color: #f3e5f5; }
+        .literature { background-color: #e8f5e9; }
+        .history { background-color: #fff3e0; }
+        .english { background-color: #e0f7fa; }
+        .biology { background-color: #e8f5e8; }
+        .pe { background-color: #f1f8e9; }
+        .art { background-color: #fce4ec; }
+        .music { background-color: #f3e5f5; }
+        .tech { background-color: #fff8e1; }
+        .geography { background-color: #e0f2f1; }
+        .function { background-color: #f3e5f5; }
+        .sport { background-color: #f1f8e9; }
+        .conversation { background-color: #fff3e0; }
+
+        .notes {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .notes h3 {
+            color: #2196F3;
+            margin-bottom: 15px;
+        }
+
+        .notes ul {
+            list-style-type: none;
+            padding-left: 20px;
+        }
+
+        .notes li {
+            margin-bottom: 10px;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .notes li:before {
+            content: "📌";
+            position: absolute;
+            left: 0;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .class-title {
+                font-size: 28px;
+            }
+            
+            .schedule-container {
+                padding: 15px;
+            }
+            
+            th, td {
+                padding: 12px 8px;
+                font-size: 14px;
+            }
+            
+            .lesson-number {
+                width: 50px;
+            }
+            
+            .time {
+                width: 90px;
+            }
+            
+            .teacher {
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            th, td {
+                padding: 10px 6px;
+                font-size: 12px;
+            }
+            
+            .class-title {
+                font-size: 24px;
+            }
+            
+            .week-info {
+                font-size: 16px;
+            }
+            
+            .legend {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        .empty-cell {
+            color: #999;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Вернуться на главную</a>
+        
+        <div class="header">
+            <h1 class="class-title">Расписание уроков 5А класса</h1>
+        </div>
+
+        <div class="schedule-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="lesson-number">№</th>
+                        <th class="time">Время</th>
+                        <th>Понедельник</th>
+                        <th>Вторник</th>
+                        <th>Среда</th>
+                        <th>Четверг</th>
+                        <th>Пятница</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Урок 1 -->
+                    <tr>
+                        <td class="lesson-number">1</td>
+                        <td class="time">8:30 - 9:15</td>
+                        <td class="conversation">
+                            <div class="subject">Разговоры о важном</div>
+                            <div class="teacher">ФИО: Гвинджия Е.В.</div>
+                            <div class="classroom">Каб.: 18</div>
+                        </td>
+                        <td class="geography">
+                            <div class="subject">География</div>
+                            <div class="teacher">ФИО: Сидорина К.А.</div>
+                            <div class="classroom">Каб.: 15</div>
+                        </td>
+                        <td class="pe">
+                            <div class="subject">Физическая культура</div>
+                            <div class="teacher">ФИО:Трофимов Д.Ю.</div>
+                            <div class="classroom">Каб.: Спортзал</div>
+                        </td>
+                        <td class="russian">
+                            <div class="subject">Русский язык</div>
+                            <div class="teacher">ФИО: Гвинджия Е.В.</div>
+                            <div class="classroom">Каб.: 18</div>
+                        </td>
+                        <td class="math">
+                            <div class="subject">Математика</div>
+                            <div class="teacher">ФИО: Абрамова Н.В.</div>
+                            <div class="classroom">Каб.: 14</div>
+                        </td>
+                    </tr>
+                    
+                    <!-- Урок 2 -->
+                    <tr>
+                        <td class="lesson-number">2</td>
+                        <td class="time">9:25 - 10:10</td>
+                        <td class="russian">
+                            <div class="subject">Русский язык</div>
+                            <div class="teacher">ФИО: Гвинджия Е.В.</div>
+                            <div class="classroom">Каб.: 18</div>
+                        </td>
+                        <td class="literature">
+                            <div class="subject">Литература</div>
+                            <div class="teacher">ФИО: Гвинджия Е.В.</div>
+                            <div class="classroom">Каб.: 18</div>
+                        </td>
+                        <td class="function">
+                            <div class="subject">Функциональная грамотность</div>
+                            <div class="teacher">ФИО: Подгорнова Л.Г.</div>
+                            <div class="classroom">Каб.: 22</div>
+                        </td>
+                        <td class="russian">
+                            <div class="subject">Русский язык</div>
+                            <div class="teacher">ФИО: Гвинджия Е.В.</div>
+                            <div class="classroom">Каб.: 18</div>
+                        </td>
+                        <td class="sport">
+                            <div class="subject">Спортивные игры</div>
+                            <div class="teacher">ФИО: Трофимов Д.Ю.</div>
+                            <div class="classroom">Каб.: Спортзал</div>
+                        </td>
+                    </tr>
+                    
+                    <!-- Большая перемена -->
+                    <tr class="break">
+                        <td colspan="7">Большая перемена - 20 минут</td>
+                    </tr>
+                    
+                    <!-- Урок 3 -->
+                    <tr>
+                        <td class="lesson-number">3</td>
+                        <td class="time">10:30 - 11:15</td>
+                        <td class="history">
+                            <div class="subject">История</div>
+                            <div class="teacher">ФИО: Гордеева И.В.</div>
+                            <div class="classroom">Каб.: 16</div>
+                        </td>
+                        <td class="pe">
+                            <div class="subject">Физическая культура</div>
+                            <div class="teacher">ФИО: Трофимов Д.Ю.</div>
+                            <div class="classroom">Каб.: Спортзал</div>
+                        </td>
+                        <td class="russian">
+                            <div class="subject">Русский язык</div>
+                            <div class="teacher">ФИО: Гвинджия Е.В.</div>
+                            <div class="classroom">Каб.: 18</div>
+                        </td>
+                        <td class="history">
+                            <div class="subject">История</div>
+                            <div class="teacher">ФИО: Гордеева И.В.</div>
+                            <div class="classroom">Каб.: 16</div>
+                        </td>
+                        <td class="russian">
+                            <div class="subject">Русский язык</div>
+                            <div class="teacher">ФИО: Гвинджия Е.В.</div>
+                            <div class="classroom">Каб.: 18</div>
+                        </td>
+                    </tr>
+                    
+                    <!-- Большая перемена -->
+                    <tr class="break">
+                        <td colspan="7">Большая перемена - 20 минут</td>
+                    </tr>
+
+                    <!-- Урок 4 -->
+                    <tr>
+                        <td class="lesson-number">4</td>
+                        <td class="time">11:35 - 12:20</td>
+                        <td class="math">
+                            <div class="subject">Математика</div>
+                            <div class="teacher">ФИО: Абрамова Н.В.</div>
+                            <div class="classroom">Каб.: 14</div>
+                        </td>
+                        <td class="tech">
+                            <div class="subject">Технология</div>
+                            <div class="teacher">ФИО: Зверева А.А., Середа Е.Б.</div>
+                            <div class="classroom">Каб.: 24</div>
+                        </td>
+                        <td class="biology">
+                            <div class="subject">Биология</div>
+                            <div class="teacher">ФИО: Ермакова Г.Д.</div>
+                            <div class="classroom">Каб.: 13</div>
+                        </td>
+                        <td class="literature">
+                            <div class="subject">Литература</div>
+                            <div class="teacher">ФИО: Гвинджия Е.В.</div>
+                            <div class="classroom">Каб.: 18</div>
+                        </td>
+                        <td class="math">
+                            <div class="subject">Математика</div>
+                            <div class="teacher">ФИО: Абрамова Н.В.</div>
+                            <div class="classroom">Каб.: 14</div>
+                        </td>
+                    </tr>
+                    
+                    <!-- Урок 5 -->
+                    <tr>
+                        <td class="lesson-number">5</td>
+                        <td class="time">12:30 - 13:15</td>
+                        <td class="art">
+                            <div class="subject">Изобразительное искусство</div>
+                            <div class="teacher">ФИО:</div>
+                            <div class="classroom">Каб.:</div>
+                        </td>
+                        <td class="tech">
+                            <div class="subject">Технология</div>
+                            <div class="teacher">ФИО: Зверева А.А., Середа Е.Б.</div>
+                            <div class="classroom">Каб.: 24</div>
+                        </td>
+                        <td class="math">
+                            <div class="subject">Математика</div>
+                            <div class="teacher">ФИО: Абрамова Н.В.</div>
+                            <div class="classroom">Каб.: 14</div>
+                        </td>
+                        <td class="english">
+                            <div class="subject">Английский язык</div>
+                            <div class="teacher">ФИО: Деева В.П.</div>
+                            <div class="classroom">Каб.: 3</div>
+                        </td>
+                        <td class="literature">
+                            <div class="subject">Литература</div>
+                            <div class="teacher">ФИО: Гвинджия Е.В.</div>
+                            <div class="classroom">Каб.: 18</div>
+                        </td>
+                    </tr>
+                    
+                    <!-- Урок 6 -->
+                    <tr>
+                        <td class="lesson-number">6</td>
+                        <td class="time">13:25 - 14:10</td>
+                        <td class="english">
+                            <div class="subject">Английский язык</div>
+                            <div class="teacher">ФИО: Деева В.П.</div>
+                            <div class="classroom">Каб.: 3</div>
+                        </td>
+                        <td class="math">
+                            <div class="subject">Математика</div>
+                            <div class="teacher">ФИО: Абрамова Н.В.</div>
+                            <div class="classroom">Каб.: 14</div>
+                        </td>
+                        <td class="history">
+                            <div class="subject">История</div>
+                            <div class="teacher">ФИО: Гордеева И.В.</div>
+                            <div class="classroom">Каб.: 16</div>
+                        </td>
+                        <td class="empty-cell">
+                            <div class="subject">—</div>
+                        </td>
+                        <td class="music">
+                            <div class="subject">Музыка</div>
+                            <div class="teacher">ФИО: Зверева А.А.</div>
+                            <div class="classroom">Каб.: 24</div>
+                        </td>
+                    </tr>
+                    
+                    <!-- Урок 7 -->
+                    <tr>
+                        <td class="lesson-number">7</td>
+                        <td class="time">14:20 - 15:05</td>
+                        <td class="empty-cell">
+                            <div class="subject">—</div>
+                        </td>
+                        <td class="english">
+                            <div class="subject">Английский язык</div>
+                            <div class="teacher">ФИО: Деева В.П.</div>
+                            <div class="classroom">Каб.: 3</div>
+                        </td>
+                        <td class="empty-cell">
+                            <div class="subject">—</div>
+                        </td>
+                        <td class="empty-cell">
+                            <div class="subject">—</div>
+                        </td>
+                        <td class="empty-cell">
+                            <div class="subject">—</div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="notes">
+            <h3>Важная информация:</h3>
+            <ul>
+                <li>Расписание может меняться - следите за объявлениями в классе</li>
+                <li>На Физическая культура - спортивная форма обязательна</li>
+                <li>Большая перемена: 10:10 - 10:30 и 11:15 - 11:35 (20 минут)</li>
+                <li>Малые перемены: 10 минут</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
